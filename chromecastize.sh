@@ -146,13 +146,22 @@ process_file() {
 	echo "- video: $INPUT_VCODEC -> $OUTPUT_VCODEC"
 
 	# test audio codec
-	INPUT_ACODEC=`mediainfo --Inform="Audio;%Format%\n" "$FILENAME" 2> /dev/null | head -n1`
-	if is_supported_acodec "$INPUT_ACODEC"; then
+	ATRACK_NUM=`mediainfo --Inform="Audio;%Format%\n" "$FILENAME" 2> /dev/null | wc -l`
+	(( ATRACK_NUM-- ))
+	echo "- audio: $ATRACK_NUM tracks found"
+	for (( ATRACK=0; ATRACK<ATRACK_NUM; ATRACK++ )); do
+		INPUT_ACODEC=`mediainfo --Inform="Audio;%Format%\n" "$FILENAME" 2> /dev/null | head -n$(( ATRACK+1 )) | tail -n1`
+		if ! is_supported_acodec "$INPUT_ACODEC"; then
+			NEED_ACODEC=1
+		fi
+		echo "  - track #$ATRACK : $INPUT_ACODEC"
+	done
+	if [ -z $NEED_ACODEC ]; then
 		OUTPUT_ACODEC="copy"
 	else
 		OUTPUT_ACODEC="$DEFAULT_ACODEC"
 	fi
-	echo "- audio: $INPUT_ACODEC -> $OUTPUT_ACODEC"
+	echo "- audio: convert to $OUTPUT_ACODEC"
 
 	if [ "$OUTPUT_VCODEC" = "copy" ] && [ "$OUTPUT_ACODEC" = "copy" ] && [ "$OUTPUT_GFORMAT" = "ok" ]; then
 		echo "- file should be playable by Chromecast!"
