@@ -91,20 +91,18 @@ mark_as_good() {
 
 on_success() {
 	echo ""
-	FILENAME="$1"
-	BASENAME=`basename "$FILENAME"`
-	echo "- conversion succeeded; file '$FILENAME.$OUTPUT_GFORMAT' saved"
-	mark_as_good "$FILENAME.$OUTPUT_GFORMAT"
 	echo "- renaming original file as '$FILENAME.bak'"
 	mv "$FILENAME" "$FILENAME.bak"
+	echo "- conversion succeeded; file '$ONLYNAME.$OUTPUT_GFORMAT' saved"
+	mv "$ONLYNAME.tmp.$OUTPUT_GFORMAT" "$ONLYNAME.$OUTPUT_GFORMAT"
+	mark_as_good "$ONLYNAME.$OUTPUT_GFORMAT"
 }
 
 on_failure() {
 	echo ""
-	FILENAME="$1"
 	echo "- failed to convert '$FILENAME' (or conversion has been interrupted)"
 	echo "- deleting partially converted file..."
-	rm "$FILENAME.$OUTPUT_GFORMAT" &> /dev/null
+	rm "$ONLYNAME.tmp.$OUTPUT_GFORMAT" &> /dev/null
 }
 
 process_file() {
@@ -116,6 +114,7 @@ process_file() {
 	# test extension
 	BASENAME=$(basename "$FILENAME")
 	EXTENSION="${BASENAME##*.}"
+	ONLYNAME="${BASENAME%.*}"
 	if ! is_supported_ext "$EXTENSION"; then
 		echo "- not a video format, skipping"
 		return
@@ -163,7 +162,7 @@ process_file() {
 		if [ "$OUTPUT_GFORMAT" = "ok" ]; then
 			OUTPUT_GFORMAT=$EXTENSION
 		fi
-		$FFMPEG -loglevel error -stats -i "$FILENAME" -map 0 -scodec copy -vcodec "$OUTPUT_VCODEC" -acodec "$OUTPUT_ACODEC" "$FILENAME.$OUTPUT_GFORMAT" && on_success "$FILENAME" || on_failure "$FILENAME"
+		$FFMPEG -loglevel error -stats -i "$FILENAME" -map 0 -scodec copy -vcodec "$OUTPUT_VCODEC" -acodec "$OUTPUT_ACODEC" "$ONLYNAME.tmp.$OUTPUT_GFORMAT" && on_success || on_failure
 		echo ""
 	fi
 }
