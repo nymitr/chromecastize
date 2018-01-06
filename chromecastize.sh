@@ -91,8 +91,8 @@ mark_as_good() {
 
 on_success() {
 	echo ""
-	echo "- renaming original file as '$FILENAME.bak'"
-	mv "$FILENAME" "$FILENAME.bak"
+	echo "- renaming original file as '$ONLYNAME.original.$EXTENSION'"
+	mv "$FILENAME" "$DIRNAME/$ONLYNAME.original.$EXTENSION"
 	echo "- conversion succeeded; file '$ONLYNAME.$OUTPUT_GFORMAT' saved"
 	mv "$DIRNAME/$ONLYNAME.$OUTPUT_GFORMAT.tmp" "$DIRNAME/$ONLYNAME.$OUTPUT_GFORMAT"
 	mark_as_good "$ONLYNAME.$OUTPUT_GFORMAT"
