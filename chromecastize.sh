@@ -147,6 +147,7 @@ process_file() {
 	echo "- video: $INPUT_VCODEC -> $OUTPUT_VCODEC"
 
 	# test audio codec
+	NEED_ACODEC=
 	ATRACK_NUM=`mediainfo --Inform="Audio;%Format%\n" "$FILENAME" 2> /dev/null | wc -l`
 	(( ATRACK_NUM-- ))
 	echo "- audio: $ATRACK_NUM tracks found"
