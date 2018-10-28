@@ -142,7 +142,7 @@ process_file() {
 	fi
 
 	# test general format
-	INPUT_GFORMAT=`mediainfo --Inform="General;%Format%\n" "$FILENAME" 2> /dev/null | head -n1`
+	INPUT_GFORMAT=`"$MEDIAINFO" --Inform="General;%Format%\n" "$FILENAME" 2> /dev/null | head -n1`
 	if is_supported_gformat "$INPUT_GFORMAT" && [ "$OVERRIDE_GFORMAT" = "" ] || [ "$OVERRIDE_GFORMAT" = "$EXTENSION" ]; then
 		OUTPUT_GFORMAT="ok"
 	else
@@ -152,7 +152,7 @@ process_file() {
 	echo "- general: $INPUT_GFORMAT -> $OUTPUT_GFORMAT"
 
 	# test video codec
-	INPUT_VCODEC=`mediainfo --Inform="Video;%Format%\n" "$FILENAME" 2> /dev/null | head -n1`
+	INPUT_VCODEC=`"$MEDIAINFO" --Inform="Video;%Format%\n" "$FILENAME" 2> /dev/null | head -n1`
 	if is_supported_vcodec "$INPUT_VCODEC"; then
 		OUTPUT_VCODEC="copy"
 	else
@@ -162,12 +162,12 @@ process_file() {
 
 	# test audio codec
 	NEED_ACODEC=
-	ATRACK_NUM=`mediainfo --Inform="Audio;%Format%\n" "$FILENAME" 2> /dev/null | wc -l`
+	ATRACK_NUM=`"$MEDIAINFO" --Inform="Audio;%Format%\n" "$FILENAME" 2> /dev/null | wc -l`
 	(( ATRACK_NUM-- ))
 	echo "- audio: $ATRACK_NUM tracks found"
 	for (( ATRACK=0; ATRACK<ATRACK_NUM; ATRACK++ )); do
-		INPUT_ACODEC=`mediainfo --Inform="Audio;%Format%\n" "$FILENAME" 2> /dev/null | head -n1`
-		INPUT_ACHANNELS=`mediainfo --Inform="Audio;%Channels%\n" "$FILENAME" 2> /dev/null | head -n1`
+		INPUT_ACODEC=`"$MEDIAINFO" --Inform="Audio;%Format%\n" "$FILENAME" 2> /dev/null | head -n1`
+		INPUT_ACHANNELS=`"$MEDIAINFO" --Inform="Audio;%Channels%\n" "$FILENAME" 2> /dev/null | head -n1`
 		if ! is_supported_acodec "$INPUT_ACODEC" "$INPUT_ACHANNELS"; then
 			NEED_ACODEC=1
 		fi
@@ -184,7 +184,7 @@ process_file() {
 		echo "- file should be playable by Chromecast!"
 		mark_as_good "$FILENAME"
 	else
-		echo "- video length: `mediainfo --Inform="General;%Duration/String3%" "$FILENAME" 2> /dev/null`"
+		echo "- video length: `"$MEDIAINFO" --Inform="General;%Duration/String3%" "$FILENAME" 2> /dev/null`"
 		if [ "$OUTPUT_GFORMAT" = "ok" ]; then
 			OUTPUT_GFORMAT=$EXTENSION
 		fi
