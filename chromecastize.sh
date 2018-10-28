@@ -19,6 +19,9 @@ DEFAULT_VCODEC=h264
 DEFAULT_ACODEC=libvorbis
 DEFAULT_GFORMAT=mkv
 
+MEDIAINFO=
+FFMPEG=
+
 #############
 # FUNCTIONS #
 #############
@@ -202,18 +205,24 @@ process_file() {
 # MAIN PROGRAM #
 ################
 
-# test if `mediainfo` is available
-MEDIAINFO=`which mediainfo 2> /dev/null`
+# test if `mediainfo` is set in config section
 if [ -z $MEDIAINFO ]; then
-	echo '`mediainfo` is not available, please install it'
-	exit 1
+	# test if `mediainfo` is available
+	MEDIAINFO=`which mediainfo 2> /dev/null`
+	if [ -z $MEDIAINFO ]; then
+		echo '`mediainfo` is not available, please install it'
+		exit 1
+	fi
 fi
 
-# test if `ffmpeg` is available
-FFMPEG=`which avconv 2> /dev/null || which ffmpeg 2> /dev/null`
+# test if `ffmpeg` is set in config section
 if [ -z $FFMPEG ]; then
-	echo '`avconv` (or `ffmpeg`) is not available, please install it'
-	exit 1
+	# test if `ffmpeg` is available
+	FFMPEG=`which avconv 2> /dev/null || which ffmpeg 2> /dev/null`
+	if [ -z $FFMPEG ]; then
+		echo '`avconv` (or `ffmpeg`) is not available, please install it'
+		exit 1
+	fi
 fi
 
 # test if `grealpath` or `realpath` is available
