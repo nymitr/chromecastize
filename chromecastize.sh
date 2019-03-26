@@ -19,6 +19,8 @@ DEFAULT_VCODEC=h264
 DEFAULT_ACODEC=libvorbis
 DEFAULT_GFORMAT=mkv
 
+FILE_SUFFIX=chrmcst
+
 MEDIAINFO=
 FFMPEG=
 
@@ -106,8 +108,6 @@ on_success() {
 	FILENAME="$1"
 	DESTINATION_FILENAME="$2"
 	echo "- conversion succeeded; file '$DESTINATION_FILENAME' saved"
-	echo "- renaming original file as '${FILENAME%.$EXTENSION}.bak.$EXTENSION'"
-	mv "$FILENAME" "${FILENAME%.$EXTENSION}.bak.$EXTENSION"
 	mv "$FILENAME.$OUTPUT_GFORMAT.tmp" "$DESTINATION_FILENAME"
 	mark_as_good "$DESTINATION_FILENAME"
 }
@@ -195,7 +195,7 @@ process_file() {
 		    OUTPUT_FORMAT="mp4"
 		fi
 		# Define the destination filename, stripping the original extension.
-		DESTINATION_FILENAME=${FILENAME%.$EXTENSION}.$OUTPUT_GFORMAT
+		DESTINATION_FILENAME=${FILENAME%.$EXTENSION}.$FILE_SUFFIX.$OUTPUT_GFORMAT
 		$FFMPEG -loglevel error -stats -i "$FILENAME" -map 0 -scodec copy -vcodec "$OUTPUT_VCODEC" -acodec "$OUTPUT_ACODEC" -f "$OUTPUT_FORMAT" "$FILENAME.$OUTPUT_GFORMAT.tmp" && on_success "$FILENAME" "$DESTINATION_FILENAME" || on_failure "$FILENAME"
 		echo ""
 	fi

@@ -4,7 +4,8 @@ Simple bash script to convert video files into Google Chromecast supported forma
 
 Script identifies video and audio format of given file (using `mediainfo`) and converts it if necessary (using `ffmpeg`).
 
-Filename of output video file is `<original_filename>.mkv` and original video file gets renamed to `<original_filename>.original.<original_extension>`.
+Filename of output video file is `<original_filename>.<file_suffix>.mkv`, where `file_suffix` is used to distinguish original and converted file.
+Original video file kept intact.
 
 Requirements
 ------------
